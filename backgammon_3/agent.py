@@ -15,22 +15,22 @@ class net():
     def __init__(self):
         self.device = torch.device('cpu')
         self.lam = 1
-        self.w1 = Variable(torch.randn(99, 198, device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
-        self.b1 = Variable(torch.zeros((99, 1), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
-        self.w2 = Variable(torch.randn(198, 99, device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
-        self.b2 = Variable(torch.zeros((198, 1), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
+        self.w1 = Variable(torch.randn(99, 198, device=self.device , dtype=torch.float), requires_grad=True)
+        self.b1 = Variable(torch.zeros((99, 1), device=self.device , dtype=torch.float), requires_grad=True)
+        self.w2 = Variable(torch.randn(198, 99, device=self.device , dtype=torch.float), requires_grad=True)
+        self.b2 = Variable(torch.zeros((198, 1), device=self.device , dtype=torch.float), requires_grad=True)
         self.Z_w1 = torch.zeros(self.w1.size(), device=self.device, dtype=torch.float)
         self.Z_b1 = torch.zeros(self.b1.size(), device=self.device, dtype=torch.float)
         self.Z_w2 = torch.zeros(self.w2.size(), device=self.device, dtype=torch.float)
         self.Z_b2 = torch.zeros(self.b2.size(), device=self.device, dtype=torch.float)
         
         #Critic part
-        self.W=Variable(torch.zeros((1, 198), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
-        self.B=Variable(torch.zeros((1, 1), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
+        self.W=Variable(torch.zeros((1, 198), device=self.device , dtype=torch.float), requires_grad=True)
+        self.B=Variable(torch.zeros((1, 1), device=self.device , dtype=torch.float), requires_grad=True)
         self.Z_W = torch.zeros(self.W.size(), device=self.device, dtype=torch.float)
         self.Z_B = torch.zeros(self.B.size(), device=self.device, dtype=torch.float)
         #Actor part
-        self.theta=Variable(torch.zeros((1, 198), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
+        self.theta=Variable(torch.zeros((1, 198), device=self.device , dtype=torch.float), requires_grad=True)
         #self.thetaB=Variable(torch.zeros((1, 1), device=torch.device('cpu'), dtype=torch.float), requires_grad=True)
         self.Z_theta = torch.zeros(self.theta.size(), device=self.device, dtype=torch.float)
        # self.Z_thetaB = torch.zeros(self.thetaB.size(), device=self.device, dtype=torch.float)
