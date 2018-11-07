@@ -15,7 +15,7 @@ def main():
     winners = {}
     winners["1"] = 0
     winners["-1"] = 0  # Collecting stats of the games
-    nGames = 100000  # how many games?
+    nGames = 100  # how many games?
     arr = np.zeros(nGames)
     for g in tqdm(range(nGames)):
         
@@ -32,6 +32,7 @@ def main():
     
     file_net = open('saved_net', 'wb')
     pickle.dump(new_agent, file_net)
+    file_net.close()
     
     print("Out of", nGames, "games,")
     print("player", 1, "won", winners["1"], "times and")
