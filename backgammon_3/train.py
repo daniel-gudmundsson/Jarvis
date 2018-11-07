@@ -1,4 +1,4 @@
-import agent
+import agent_double as agent
 import Backgammon
 import numpy as np
 from tqdm import tqdm
@@ -9,15 +9,20 @@ import pickle
 # net = agent.policy_nn()
 # val_nn = agent.val_func_nn()
 new_agent = agent.net()
+#new_agent = pickle.load(open('saved_net', 'rb'))
 
 
 def main():
     winners = {}
     winners["1"] = 0
     winners["-1"] = 0  # Collecting stats of the games
-    nGames = 100  # how many games?
+    nGames = 10000  # how many games?
     arr = np.zeros(nGames)
     for g in tqdm(range(nGames)):
+        
+#        w=new_agent.critic.w1
+#        print(w)
+        
         
         
         winner = Backgammon.play_a_game(commentary=False, net=new_agent)
@@ -26,9 +31,9 @@ def main():
 #        if(g % 100 == 0):
 #            print(new_agent.torch_nn_policy.theta)
     # print(winners)
-#    file = open('Failed.py', 'w')
-#    file.write(np.array_str(arr))
-#    file.close()
+    file = open('Failed.py', 'w')
+    file.write(np.array_str(arr))
+    file.close()
     
     file_net = open('saved_net', 'wb')
     pickle.dump(new_agent, file_net)

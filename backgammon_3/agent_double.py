@@ -39,7 +39,7 @@ class critic():
         
         ###Final step
         #self.W=Variable(torch.zeros((1, 198), device=self.device , dtype=torch.float), requires_grad=True)
-        self.W=Variable(torch.zeros((1, 99), device=self.device , dtype=torch.float), requires_grad=True)
+        self.W=Variable(torch.randn((1, 99), device=self.device , dtype=torch.float), requires_grad=True)
         self.B=Variable(torch.zeros((1, 1), device=self.device , dtype=torch.float), requires_grad=True)
         self.Z_W = torch.zeros(self.W.size(), device=self.device, dtype=torch.float)
         self.Z_B = torch.zeros(self.B.size(), device=self.device, dtype=torch.float)
@@ -49,9 +49,9 @@ class critic():
         self.oldtarget=0
         
         ###Step sizes for each layer
-        self.alpha1 = 0.001
-        self.alpha2 = 0.001
-        self.alpha3 = 0.001
+        self.alpha1 = 0.01
+        self.alpha2 = 0.01
+        self.alpha3 = 0.01
         
         self.lam=1
         
@@ -138,7 +138,7 @@ class actor():
         
         ###Final step
         #self.W=Variable(torch.zeros((1, 198), device=self.device , dtype=torch.float), requires_grad=True)
-        self.theta=Variable(torch.zeros((1, 99), device=self.device , dtype=torch.float), requires_grad=True)
+        self.theta=Variable(torch.randn((1, 99), device=self.device , dtype=torch.float), requires_grad=True)
         self.B=Variable(torch.zeros((1, 1), device=self.device , dtype=torch.float), requires_grad=True)
         self.Z_theta = torch.zeros(self.theta.size(), device=self.device, dtype=torch.float)
         self.Z_B = torch.zeros(self.B.size(), device=self.device, dtype=torch.float)
@@ -151,9 +151,9 @@ class actor():
         self.ln_softmax=0 ###Not sure about this
         
         ###Step sizes for each layer
-        self.alpha1 = 0.001
-        self.alpha2 = 0.001
-        self.alpha3 = 0.001
+        self.alpha1 = 0.01
+        self.alpha2 = 0.01
+        self.alpha3 = 0.01
         
         self.lam=1
     

@@ -9,7 +9,7 @@ Feel free to change this file as you wish but you will only submit your agent
 so make sure your changes here won't affect his performance.
 """
 import numpy as np
-import agent
+import agent_double as agent
 # import flipped_agent 
 
 def init_board():
@@ -218,7 +218,7 @@ def play_a_game(commentary = False, net=None):
             board_copy = np.copy(board) 
 
             # make the move (agent vs agent):
-            #move = agent.action(net, board_copy,dice,player,i) 
+#            move = agent.action(board_copy,dice,player,i) 
             
             # if you're playing vs random agent:
             if player == 1:
