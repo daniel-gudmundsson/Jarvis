@@ -98,6 +98,7 @@ class critic():
         self.Z_w1 = gamma * self.lam * self.Z_w1 + self.w1.grad.data
         self.Z_b1 = gamma * self.lam * self.Z_b1 + self.b1.grad.data
         
+        self.Z_W = gamma * self.lam * self.Z_W + self.W.grad.data
         self.Z_B = gamma * self.lam * self.Z_B + self.B.grad.data
         
         ###Zero the gradiants
@@ -195,6 +196,7 @@ class actor():
         self.Z_w1 = gamma * self.lam * self.Z_w1 + self.w1.grad.data
         self.Z_b1 = gamma * self.lam * self.Z_b1 + self.b1.grad.data
         
+        self.Z_theta= gamma * self.lam * self.Z_theta + self.theta.grad.data
         self.Z_B = gamma * self.lam * self.Z_B + self.B.grad.data
         
         ###Zero the gradiants

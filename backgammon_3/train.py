@@ -20,7 +20,7 @@ def main():
     arr = np.zeros(nGames)
     for g in tqdm(range(nGames)):
         
-#        w=new_agent.critic.w1
+#        w=new_agent.actor.theta
 #        print(w)
         
         
@@ -31,9 +31,9 @@ def main():
 #        if(g % 100 == 0):
 #            print(new_agent.torch_nn_policy.theta)
     # print(winners)
-    file = open('Failed.py', 'w')
-    file.write(np.array_str(arr))
-    file.close()
+#    file = open('Failed.py', 'w')
+#    file.write(np.array_str(arr))
+#    file.close()
     
     file_net = open('saved_net', 'wb')
     pickle.dump(new_agent, file_net)
