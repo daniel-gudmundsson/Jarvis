@@ -1,7 +1,7 @@
 agent_double:
 Uses the board completely "raw" (no encoding at all)
 
-agent_onehot:
+agent_onehot: (This is the neural network we're turning in)
 Uses one hot encoding to warp the board to a vector of size 832.
 This is the bset one yet!!!!!!!!!! (about 80% win ratio and is very stable)
 Is stored in 'saved_net_one'
