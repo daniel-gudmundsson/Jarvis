@@ -9,12 +9,15 @@ Feel free to change this file as you wish but you will only submit your agent
 so make sure your changes here won't affect his performance.
 """
 import numpy as np
-import agent_double as agent
+#import agent_double as agent
+import agent_onehot as agent
+#import agent_one_tseFeat as agent
+
 # import flipped_agent 
 
 def init_board():
     # initializes the game board
-    board = np.zeros(29)
+    board = np.zeros(29, dtype=int)
     board[1] = -2
     board[12] = -5
     board[17] = -3
