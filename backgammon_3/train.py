@@ -20,7 +20,7 @@ def main():
     winners = {}
     winners["1"] = 0
     winners["-1"] = 0  # Collecting stats of the games
-    nGames = 1000    # how many games?
+    nGames = 10000    # how many games?
     arr = np.zeros(nGames)
     for g in tqdm(range(nGames)):
         
@@ -32,16 +32,16 @@ def main():
         agent.critic.zero_el()
         
         winner = Backgammon.play_a_game(commentary=False, net=agent)
+        
+        
+        
         winners[str(winner)] += 1
         arr[g] = winner
 #        if(g % 100 == 0):
 #            print(new_agent.torch_nn_policy.theta)
     # print(winners)
-#    file = open('Failed.py', 'w')
-#    file.write(np.array_str(arr))
-#    file.close()
 #    
-#    file_net = open('saved_net_soft', 'wb')
+    ##Save the agent
     file_net = open('saved_net_one_2', 'wb')
     pickle.dump(agent, file_net)
     file_net.close()

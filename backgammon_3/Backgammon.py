@@ -221,7 +221,7 @@ def play_a_game(commentary = False, net=None):
             board_copy = np.copy(board) 
 
             # make the move (agent vs agent):
-#            move = agent.action(board_copy,dice,player,i) 
+#            move = agent.action(net,board_copy,dice,player,i) 
             
             # if you're playing vs random agent:
             if player == 1:

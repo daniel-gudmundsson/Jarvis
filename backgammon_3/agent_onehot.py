@@ -61,9 +61,9 @@ class critic():
         self.oldtarget=0
         
         ###Step sizes for each layer
-        self.alpha1 = 0.01
-        self.alpha2 = 0.01
-        self.alpha3 = 0.01
+        self.alpha1 = 0.005
+        self.alpha2 = 0.005
+        self.alpha3 = 0.005
         
         self.lam=1
         
@@ -179,9 +179,9 @@ class actor():
         self.ln_softmax=0 ###Not sure about this
         
         ###Step sizes for each layer
-        self.alpha1 = 0.01
-        self.alpha2 = 0.01
-        self.alpha3 = 0.01
+        self.alpha1 = 0.005
+        self.alpha2 = 0.005
+        self.alpha3 = 0.005
         
         self.lam=1
     
@@ -271,8 +271,9 @@ def action(net, board_copy,dice,player,i):
     # inputs are the board, the dice and which player is to move
     # outputs the chosen move accordingly to its policy
     
+    if player == -1: board_copy = flip_board(board_copy) ##Flip the board
     # check out the legal moves available for the throw
-    possible_moves, possible_boards = Backgammon.legal_moves(board_copy, dice, player)
+    possible_moves, possible_boards = Backgammon.legal_moves(board_copy, dice, player=1)
     
     # if there are no moves available
     if len(possible_moves) == 0: 
@@ -316,6 +317,7 @@ def action(net, board_copy,dice,player,i):
     ###Update the actor via backpropogation
     net.actor.backward(log_probs[i], delta, net.gamma)
     
+    if player == -1: move = flip_move(move) ###Flip the move
     
     return move
 
@@ -409,3 +411,19 @@ def getFeatures(board, player):
         features[196] = 0
         features[197] = 0
     return features
+
+def flip_board(board_copy):
+    #flips the game board and returns a new copy
+    idx = np.array([0,24,23,22,21,20,19,18,17,16,15,14,13,
+    12,11,10,9,8,7,6,5,4,3,2,1,26,25,28,27])
+    flipped_board = -np.copy(board_copy[idx])
+        
+    return flipped_board
+
+def flip_move(move):
+    if len(move)!=0:
+        for m in move:
+            for m_i in range(2):
+                m[m_i] = np.array([0,24,23,22,21,20,19,18,17,16,15,14,13,
+                                12,11,10,9,8,7,6,5,4,3,2,1,26,25,28,27])[m[m_i]]        
+    return move
