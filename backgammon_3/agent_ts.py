@@ -156,7 +156,9 @@ class net():
             ###The actor
             x=self.forward(getFeatures(self.xold))
             grad_ln_pi = x - self.xtheta
-            self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
+            self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+            self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+           # self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
             
         else:
             ###new board afterstate value
@@ -195,7 +197,9 @@ class net():
             ###The actor
             x=self.forward(getFeatures(self.xFlipOld))
             grad_ln_pi = x - self.flipxtheta
-            self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
+            self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+            self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+            #self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
         
     def gameOverUpdate(self, R):
      
@@ -233,7 +237,9 @@ class net():
         ###The actor
         x=self.forward(getFeatures(self.xold))
         grad_ln_pi = x - self.xtheta
-        self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
+        self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+        self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+        #self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
 
     ########################################################################
     ########################################################################
@@ -247,7 +253,7 @@ class net():
         y_sigmoid=self.critic(getFeatures(self.xFlipOld))
         oldtarget = y_sigmoid.detach().cpu().numpy()
         
-        delta=R + self.gamma * target - oldtarget
+        delta=(1-R) + self.gamma * target - oldtarget
         delta=torch.tensor(delta, dtype=torch.float, device=self.device)
         ###The critic
         y_sigmoid.backward()
@@ -275,7 +281,9 @@ class net():
         ###The actor
         x=self.forward(getFeatures(self.xFlipOld))
         grad_ln_pi = x - self.flipxtheta
-        self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
+        self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+        self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+        #self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
             
         
             
