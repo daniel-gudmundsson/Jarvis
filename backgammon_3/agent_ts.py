@@ -20,27 +20,32 @@ from numpy.random import choice
 class net():
     def __init__(self):
         self.device = torch.device('cuda')
-        self.w1 = Variable(torch.randn(50, 196, device=self.device , dtype=torch.float), requires_grad=True)
-        self.b1 = Variable(torch.zeros((50, 1), device=self.device , dtype=torch.float), requires_grad=True)
+        self.w1 = Variable(0.001*torch.randn(50, 196, device=self.device , dtype=torch.float), requires_grad=True)
+        self.b1 = Variable(0.001*torch.zeros((50, 1), device=self.device , dtype=torch.float), requires_grad=True)
         
 #        self.w2 = Variable(torch.randn(99, 99, device=self.device , dtype=torch.float), requires_grad=True)
 #        self.b2 = Variable(torch.zeros((99, 1), device=self.device , dtype=torch.float), requires_grad=True)
         
         self.Z_w1 = torch.zeros(self.w1.size(), device=self.device, dtype=torch.float)
         self.Z_b1 = torch.zeros(self.b1.size(), device=self.device, dtype=torch.float)
+        self.Z_w1F = torch.zeros(self.w1.size(), device=self.device, dtype=torch.float)
+        self.Z_b1F = torch.zeros(self.b1.size(), device=self.device, dtype=torch.float)
 #        self.Z_w2 = torch.zeros(self.w2.size(), device=self.device, dtype=torch.float)
 #        self.Z_b2 = torch.zeros(self.b2.size(), device=self.device, dtype=torch.float)
         
         ###The critic
-        self.W = Variable(torch.randn(1, 50, device=self.device , dtype=torch.float), requires_grad=True)
-        self.B = Variable(torch.zeros((1, 1), device=self.device , dtype=torch.float), requires_grad=True)
+        self.W = Variable(0.001*torch.randn(1, 50, device=self.device , dtype=torch.float), requires_grad=True)
+        self.B = Variable(0.001*torch.zeros((1, 1), device=self.device , dtype=torch.float), requires_grad=True)
         self.Z_W = torch.zeros(self.W.size(), device = self.device, dtype = torch.float)
         self.Z_B = torch.zeros(self.B.size(), device = self.device, dtype = torch.float)
+        self.Z_WF = torch.zeros(self.W.size(), device = self.device, dtype = torch.float)
+        self.Z_BF = torch.zeros(self.B.size(), device = self.device, dtype = torch.float)
         
         ###The actor
 #        self.theta = Variable(torch.randn(1, 80, device=self.device , dtype=torch.float), requires_grad=True)
-        self.theta = 0.01*torch.ones((1,50), device = self.device, dtype=torch.float)
+        self.theta = 0.001**torch.ones((1,50), device = self.device, dtype=torch.float)
         self.Z_theta = torch.zeros(self.theta.size(), device = self.device, dtype = torch.float)
+        self.Z_thetaF = torch.zeros(self.theta.size(), device = self.device, dtype = torch.float)
         
         ###Stuff we need
         self.target=0
@@ -49,13 +54,13 @@ class net():
         self.hidden=0
         
         ###Parameters
-        self.alpha1=0.1
-        self.alpha2=0.1
-        self.alphaC=0.1
+        self.alpha1=0.001
+        self.alpha2=0.001
+        self.alphaC=0.001
         self.alphaA=0.001
         
-        self.lamC=0.8
-        self.lamA=0.8
+        self.lamC=1
+        self.lamA=1
         
         self.gamma=1
         
@@ -63,6 +68,8 @@ class net():
         self.xFlipNew=flip_board(np.copy(Backgammon_self.init_board()))
         self.xold=Backgammon_self.init_board()
         self.xnew=Backgammon_self.init_board()
+        
+        self.xdouble=Backgammon_self.init_board()
         
         self.xtheta=None
         self.flipxtheta=0
@@ -76,11 +83,16 @@ class net():
     def zero_el(self):
         self.Z_w1 = torch.zeros(self.w1.size(), device=self.device, dtype=torch.float)
         self.Z_b1 = torch.zeros(self.b1.size(), device=self.device, dtype=torch.float)
+        self.Z_w1F = torch.zeros(self.w1.size(), device=self.device, dtype=torch.float)
+        self.Z_b1F = torch.zeros(self.b1.size(), device=self.device, dtype=torch.float)
 #        self.Z_w2 = torch.zeros(self.w2.size(), device=self.device, dtype=torch.float)
 #        self.Z_b2 = torch.zeros(self.b2.size(), device=self.device, dtype=torch.float)
         self.Z_W = torch.zeros(self.W.size(), device = self.device, dtype = torch.float)
         self.Z_B = torch.zeros(self.B.size(), device = self.device, dtype = torch.float) 
         self.Z_theta = torch.zeros(self.theta.size(), device = self.device, dtype = torch.float)
+        self.Z_WF = torch.zeros(self.W.size(), device = self.device, dtype = torch.float)
+        self.Z_BF = torch.zeros(self.B.size(), device = self.device, dtype = torch.float) 
+        self.Z_thetaF = torch.zeros(self.theta.size(), device = self.device, dtype = torch.float)
         
         
     def forward(self, x, isActor=False):
@@ -173,12 +185,12 @@ class net():
             delta=torch.tensor(delta, dtype=torch.float, device=self.device)
             ###The critic
             y_sigmoid.backward()
-            self.Z_w1 = self.gamma * self.lamC * self.Z_w1 + self.w1.grad.data
-            self.Z_b1 = self.gamma * self.lamC * self.Z_b1 + self.b1.grad.data
+            self.Z_w1F = self.gamma * self.lamC * self.Z_w1F + self.w1.grad.data
+            self.Z_b1F = self.gamma * self.lamC * self.Z_b1F + self.b1.grad.data
 #            self.Z_w2 = self.gamma * self.lamC * self.Z_w2 + self.w2.grad.data
 #            self.Z_b2 = self.gamma * self.lamC * self.Z_b2 + self.b2.grad.data
-            self.Z_W = self.gamma * self.lamC * self.Z_W + self.W.grad.data
-            self.Z_B = self.gamma * self.lamC * self.Z_B + self.B.grad.data
+            self.Z_WF= self.gamma * self.lamC * self.Z_WF+ self.W.grad.data
+            self.Z_BF = self.gamma * self.lamC * self.Z_BF + self.B.grad.data
         
             self.w1.grad.data.zero_()
             self.b1.grad.data.zero_()
@@ -187,18 +199,18 @@ class net():
             self.W.grad.data.zero_()
             self.B.grad.data.zero_()
         
-            self.w1.data = self.w1.data + self.alpha1 * delta * self.Z_w1
-            self.b1.data = self.b1.data + self.alpha1 * delta * self.Z_b1
+            self.w1.data = self.w1.data + self.alpha1 * delta * self.Z_w1F
+            self.b1.data = self.b1.data + self.alpha1 * delta * self.Z_b1F
 #            self.w2.data = self.w2.data + self.alpha2 * delta * self.Z_w2
 #            self.b2.data = self.b2.data + self.alpha2 * delta * self.Z_b2
-            self.W.data = self.W.data + self.alphaC * delta * self.Z_W
-            self.B.data = self.B.data + self.alphaC * delta * self.Z_B
+            self.W.data = self.W.data + self.alphaC * delta * self.Z_WF
+            self.B.data = self.B.data + self.alphaC * delta * self.Z_BF
             
             ###The actor
             x=self.forward(getFeatures(self.xFlipOld))
             grad_ln_pi = x - self.flipxtheta
-            self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
-            self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+            self.Z_thetaF=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+            self.theta.data =self.theta.data + self.alphaA*delta*self.Z_thetaF
             #self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
         
     def gameOverUpdate(self, R):
@@ -257,12 +269,12 @@ class net():
         delta=torch.tensor(delta, dtype=torch.float, device=self.device)
         ###The critic
         y_sigmoid.backward()
-        self.Z_w1 = self.gamma * self.lamC * self.Z_w1 + self.w1.grad.data
-        self.Z_b1 = self.gamma * self.lamC * self.Z_b1 + self.b1.grad.data
+        self.Z_w1F = self.gamma * self.lamC * self.Z_w1F + self.w1.grad.data
+        self.Z_b1F = self.gamma * self.lamC * self.Z_b1F + self.b1.grad.data
 #        self.Z_w2 = self.gamma * self.lamC * self.Z_w2 + self.w2.grad.data
 #        self.Z_b2 = self.gamma * self.lamC * self.Z_b2 + self.b2.grad.data
-        self.Z_W = self.gamma * self.lamC * self.Z_W + self.W.grad.data
-        self.Z_B = self.gamma * self.lamC * self.Z_B + self.B.grad.data
+        self.Z_WF = self.gamma * self.lamC * self.Z_WF + self.W.grad.data
+        self.Z_BF = self.gamma * self.lamC * self.Z_BF + self.B.grad.data
     
         self.w1.grad.data.zero_()
         self.b1.grad.data.zero_()
@@ -271,25 +283,25 @@ class net():
         self.W.grad.data.zero_()
         self.B.grad.data.zero_()
     
-        self.w1.data = self.w1.data + self.alpha1 * delta * self.Z_w1
-        self.b1.data = self.b1.data + self.alpha1 * delta * self.Z_b1
+        self.w1.data = self.w1.data + self.alpha1 * delta * self.Z_w1F
+        self.b1.data = self.b1.data + self.alpha1 * delta * self.Z_b1F
 #        self.w2.data = self.w2.data + self.alpha2 * delta * self.Z_w2
 #        self.b2.data = self.b2.data + self.alpha2 * delta * self.Z_b2
-        self.W.data = self.W.data + self.alphaC * delta * self.Z_W
-        self.B.data = self.B.data + self.alphaC * delta * self.Z_B
+        self.W.data = self.W.data + self.alphaC * delta * self.Z_WF
+        self.B.data = self.B.data + self.alphaC * delta * self.Z_BF
         
         ###The actor
         x=self.forward(getFeatures(self.xFlipOld))
         grad_ln_pi = x - self.flipxtheta
-        self.Z_theta=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
-        self.theta.data =self.theta.data + self.alphaA*delta*self.Z_theta
+        self.Z_thetaF=self.gamma*self.lamA+ grad_ln_pi.view(1,len(grad_ln_pi))
+        self.theta.data =self.theta.data + self.alphaA*delta*self.Z_thetaF
         #self.theta.data = self.theta.data + self.alphaA*delta*grad_ln_pi.view(1,len(grad_ln_pi))
             
         
             
             
 
-def action(net, board_copy,dice,player,i, learn=True):
+def action(net, board_copy,dice,player,i,firstMove, learn=True):
     # the champion to be
     # inputs are the board, the dice and which player is to move
     # outputs the chosen move accordingly to its policy
@@ -314,9 +326,9 @@ def action(net, board_copy,dice,player,i, learn=True):
         ts.append(getFeatures(b))
     
     if learn:
-        if not net.firstMove:
+        if not firstMove:
             net.update(player)
-    
+
     m, xtheta =net.actor(ts, possible_moves)
     if  player==1:
         net.xtheta=xtheta
@@ -336,9 +348,61 @@ def action(net, board_copy,dice,player,i, learn=True):
         net.xold=board_copy
     else:
         net.xFlipOld=board_copy
-        net.firstMove=False
+        #net.firstMove=False
     
     return move
+
+def action2(net, board_copy,dice,player,i,firstMove, learn=True ):
+    if player == -1: board_copy = flip_board(board_copy) ##Flip the board
+   
+    possible_moves, possible_boards = Backgammon_self.legal_moves(board_copy, dice, player=1)
+    
+    
+    if(player==1):
+        xold=net.xold
+        net.xnew=board_copy
+    else: ########################################################################
+        xold=net.xFlipOld
+        net.xFlipNew=board_copy
+    
+    if learn:
+        if not firstMove:
+            net.update(player)
+            
+    # if there are no moves available
+    if len(possible_moves) == 0:
+        if player==1:
+            net.xold=board_copy
+        else:
+            net.xFlipOld=board_copy
+
+        return [] 
+                
+    ts=[]
+    for b in possible_boards:
+        ts.append(getFeatures(b))
+        
+        
+    m, xtheta =net.actor(ts, possible_moves)
+    if  player==1:
+        net.xtheta=xtheta
+    else:
+        net.flipxtheta=xtheta
+        
+    move=possible_moves[m]
+    
+    if player == -1: move = flip_move(move) ###Flip the move
+
+    if player==1:
+        net.xold=board_copy
+    else:
+        net.xFlipOld=board_copy
+
+
+
+    return move
+
+
 
 
 
